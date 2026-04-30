@@ -86,4 +86,4 @@ SELECT *
 FROM DimCiudad
 ORDER BY Factor_Envio DESC;
 -- ═══════════════════════════════════════════════════════════════
--- Fin del Laboratorio 06
+-- Laboratorio janethrodriguez 
