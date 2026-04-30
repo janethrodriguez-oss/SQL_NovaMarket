@@ -1,3 +1,4 @@
+
 -- 💻 LABORATORIO SESIÓN 7: EL INTERROGATORIO (SQL en VS Code)
 -- ═══════════════════════════════════════════════════════════════
 -- Guía de Referencia: 02_Guia_S07_Antigravity.md
@@ -92,3 +93,138 @@
 
 -- ═══════════════════════════════════════════════════════════════
 -- Fin del Laboratorio 07
+SELECT 'DimProducto' AS Tabla, COUNT(*) AS Registros FROM DimProducto
+UNION ALL SELECT 'DimCiudad',  COUNT(*) FROM DimCiudad
+UNION ALL SELECT 'DimFecha',   COUNT(*) FROM DimFecha
+UNION ALL SELECT 'FactVentas', COUNT(*) FROM FactVentas;
+
+
+SELECT * FROM FactVentas LIMIT 10;
+SELECT COUNT(*) AS Total_Transacciones FROM FactVentas;
+
+SELECT CiudadID, COUNT(*) AS Transacciones
+FROM FactVentas
+GROUP BY CiudadID
+ORDER BY Transacciones DESC;
+
+
+SELECT
+    Nombre AS Producto,
+    Categoria,
+    Precio_Unitario,
+    Costo_Unitario,
+    (Precio_Unitario - Costo_Unitario) AS Margen_Bruto,
+    ROUND((Precio_Unitario - Costo_Unitario)
+          / Precio_Unitario * 100, 1) AS Margen_Pct
+FROM DimProducto
+ORDER BY Margen_Pct DESC;
+
+PRAGMA table_info(DimProducto);
+PRAGMA table_info(DimCiudad);
+SELECT * FROM DimProducto;
+PRAGMA table_info(FactVentas);
+
+
+-- Productos disponibles
+SELECT ProductoID, Producto, Categoria
+FROM DimProducto
+ORDER BY Categoria;
+sql-- Ciudades disponibles
+SELECT CiudadID, Ciudad, Region
+FROM DimCiudad
+ORDER BY CiudadID;
+
+
+
+SELECT 
+    CiudadID,
+    ROUND(AVG(Costo_Envio), 2) AS Costo_Envio_Promedio,
+    MIN(Costo_Envio) AS Costo_Minimo,
+    MAX(Costo_Envio) AS Costo_Maximo
+FROM FactVentas
+WHERE CiudadID = 6;
+
+
+
+SELECT
+    TransaccionID,
+    CiudadID,
+    Cantidad,
+    Precio_Venta,
+    Descuento_Pct,
+    (Precio_Venta * Cantidad)                               AS Venta_Bruta,
+    (Precio_Venta * Cantidad * Descuento_Pct)               AS Descuento_Monto,
+    ROUND(Precio_Venta * Cantidad * (1 - Descuento_Pct), 2) AS Venta_Neta
+FROM FactVentas
+LIMIT 20;
+
+SELECT COUNT(*) AS Transacciones_Leticia
+FROM FactVentas
+WHERE CiudadID = 6;
+
+SELECT
+    TransaccionID, FechaID, CiudadID, Descuento_Pct,
+    ROUND(Precio_Venta * Cantidad * (1 - Descuento_Pct), 2) AS Venta_Neta
+FROM FactVentas
+WHERE Descuento_Pct > 0.15
+ORDER BY Descuento_Pct DESC;
+
+
+SELECT TransaccionID, CiudadID, Costo_Envio
+FROM FactVentas
+WHERE CiudadID IN (4, 5)
+ORDER BY CiudadID, Costo_Envio DESC
+LIMIT 15;
+
+SELECT COUNT(*) AS Ventas_Noviembre
+FROM FactVentas
+WHERE FechaID BETWEEN 20231101 AND 20231130;
+
+SELECT COUNT(*) AS Dias_Con_Evento
+FROM DimFecha
+WHERE Evento_Especial IS NOT NULL;
+
+
+SELECT FechaID, Fecha, Evento_Especial
+FROM DimFecha
+WHERE Evento_Especial IS NOT NULL;
+
+
+SELECT TransaccionID, CiudadID, Costo_Envio, Precio_Venta, Cantidad
+FROM FactVentas
+ORDER BY Costo_Envio DESC
+LIMIT 10;
+
+
+SELECT
+    TransaccionID,
+    CiudadID,
+    Precio_Venta,
+    Cantidad,
+    Descuento_Pct,
+    Costo_Envio,
+    ROUND(Precio_Venta * Cantidad * (1 - Descuento_Pct) - Costo_Envio, 2)
+        AS Margen_Aproximado
+FROM FactVentas
+ORDER BY Margen_Aproximado ASC
+LIMIT 10;
+
+— Combinando todo: las 5 ventas de Leticia con mayor costo
+SELECT
+    TransaccionID,
+    FechaID,
+    ProductoID,
+    Cantidad,
+    ROUND(Precio_Venta * Cantidad * (1 - Descuento_Pct), 2) AS Venta_Neta,
+    Costo_Envio,
+    ROUND(Precio_Venta * Cantidad * (1 - Descuento_Pct) - Costo_Envio, 2)
+        AS Margen_Aproximado
+FROM FactVentas
+WHERE CiudadID = 6
+ORDER BY Costo_Envio DESC
+LIMIT 5;
+
+
+SELECT COUNT(*) AS total_ventas
+FROM  FactVentas
+WHERE FechaID BETWEEN 20230901 AND 20230930;
